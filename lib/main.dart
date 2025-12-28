@@ -6,6 +6,24 @@ import 'package:provider/provider.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'overlay_entry.dart';
 
+// Entry Point B: Overlay Entry Point
+// This MUST be in main.dart for Flutter to find it
+@pragma("vm:entry-point")
+void overlayMain() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Material(
+        color: Colors.transparent,
+        child: WalkingCharacter(
+          onDismiss: () => FlutterOverlayWindow.closeOverlay(),
+        ),
+      ),
+    ),
+  );
+}
+
 // Entry Point A: Main Settings UI
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,88 +50,15 @@ void callbackDispatcher() {
     if (await FlutterOverlayWindow.isPermissionGranted()) {
       await FlutterOverlayWindow.shareData("Tatakae! Time to take action!");
       await FlutterOverlayWindow.showOverlay(
-        height: 300,
-        width: 300,
+        height: -1,
+        width: -1,
         alignment: OverlayAlignment.center,
-        enableDrag: true,
+        flag: OverlayFlag.defaultFlag,
+        enableDrag: false,
       );
     }
     return Future.value(true);
   });
-}
-
-// Entry Point B: Overlay Entry Point
-// This is called when the overlay window is shown
-@pragma("vm:entry-point")
-void overlayMain() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Material(
-        color: Colors.transparent,
-        child: AnimatedOverlayWidget(),
-      ),
-    ),
-  );
-}
-
-class AnimatedOverlayWidget extends StatelessWidget {
-  const AnimatedOverlayWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: 280,
-        height: 280,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFFFB6C1), Color(0xFFDDA0DD)],
-          ),
-          borderRadius: BorderRadius.circular(140),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFFFF69B4).withOpacity(0.4),
-              blurRadius: 25,
-              spreadRadius: 8,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("\ud83e\udd8b", style: TextStyle(fontSize: 80)),
-            const SizedBox(height: 8),
-            const Text(
-              "Tatakae!",
-              style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              "Time to take action!",
-              style: TextStyle(color: Colors.white70, fontSize: 14),
-            ),
-            const SizedBox(height: 14),
-            GestureDetector(
-              onTap: () => FlutterOverlayWindow.closeOverlay(),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.25),
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: Colors.white38),
-                ),
-                child: const Text("Dismiss", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class ReminderState extends ChangeNotifier {
@@ -212,10 +157,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     try {
       // Show the overlay
       await FlutterOverlayWindow.showOverlay(
-        height: 900,
-        width: 900,
+        height: -1,
+        width: -1,
         alignment: OverlayAlignment.center,
-        enableDrag: true,
+        flag: OverlayFlag.defaultFlag,
+        enableDrag: false,
       );
       
       // Speak in loop
